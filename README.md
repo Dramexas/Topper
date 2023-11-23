@@ -4,7 +4,6 @@ Topper is a software that allows you to choose one or more windows to stay on to
 # Features
 
 Select one or more windows to bring to the forefront using a keyboard shortcut or a context menu.
-Adjust the transparency of the foreground windows to make them more or less visible.
 
 # Installation
 To install Topper, you need to have a compatible Windows operating system (Windows 7 or higher). You can download the installation file from [this link] or clone the GitHub repository from [this address].
