@@ -1,68 +1,115 @@
-# Importer la bibliothèque PyWin32
+import tkinter as tk
 import win32gui
 import win32con
+import win32process
+import psutil
 
-# Définir une fonction qui liste les programmes ouverts
-def lister_programmes():
-    # Créer une liste vide
-    programmes = []
-    # Définir une fonction qui ajoute le nom et le handle d'une fenêtre à la liste
-    def callback(handle, data):
-        # Récupérer le nom de la fenêtre
-        nom = win32gui.GetWindowText(handle)
-        # Si la fenêtre est visible et a un nom
-        if win32gui.IsWindowVisible(handle) and nom:
-            # Ajouter le nom et le handle à la liste
-            programmes.append((nom, handle))
-    # Parcourir toutes les fenêtres ouvertes et appeler la fonction callback
-    win32gui.EnumWindows(callback, None)
-    # Retourner la liste
-    return programmes
+def list_visible_windows():
+    def window_enum_handler(hwnd, resultList):
+        if win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowText(hwnd) != '':
+            threadid, pid = win32process.GetWindowThreadProcessId(hwnd)
+            process = psutil.Process(pid)
+            resultList.append((hwnd, win32gui.GetWindowText(hwnd), process.name()))
+    windows = []
+    win32gui.EnumWindows(window_enum_handler, windows)
+    return [window for window in windows if window[1]]
 
-# Définir une fonction qui affiche un menu pour choisir un programme
-def choisir_programme():
-    # Récupérer la liste des programmes
-    programmes = lister_programmes()
-    # Afficher un message
-    print("Choisissez un programme qui restera en avant plan :")
-    # Parcourir la liste des programmes
-    for i, (nom, handle) in enumerate(programmes):
-        # Afficher le numéro et le nom du programme
-        print(f"{i+1} - {nom}")
-    # Demander à l'utilisateur de saisir un numéro
-    choix = int(input("Entrez le numéro du programme : "))
-    # Vérifier que le numéro est valide
-    if 1 <= choix <= len(programmes):
-        # Récupérer le handle du programme choisi
-        handle = programmes[choix-1][1]
-        # Retourner le handle
-        return handle
-    else:
-        # Afficher un message d'erreur
-        print("Numéro invalide")
-        # Retourner None
-        return None
+def create_window():
+    root = tk.Tk()
+    root.title("Topper")  # Set the window title
 
-# Définir une fonction qui met un programme en avant plan
-def mettre_en_avant_plan(handle):
-    # Vérifier que le handle est valide
-    if handle:
-        # Récupérer le handle de la fenêtre active
-        active = win32gui.GetForegroundWindow()
-        # Si le handle est différent de la fenêtre active
-        if handle != active:
-            # Récupérer le thread de la fenêtre active
-            thread_active = win32gui.GetWindowThreadProcessId(active)[0]
-            # Récupérer le thread du programme
-            thread_programme = win32gui.GetWindowThreadProcessId(handle)[0]
-            # Attacher les threads
-            win32gui.AttachThreadInput(thread_active, thread_programme, True)
-            # Mettre le programme en avant plan
-            win32gui.SetWindowPos(handle, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-            # Détacher les threads
-            win32gui.AttachThreadInput(thread_active, thread_programme, False)
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
 
-# Appeler la fonction choisir_programme et récupérer le handle
-handle = choisir_programme()
-# Appeler la fonction mettre_en_avant_plan avec le handle
-mettre_en_avant_plan(handle)
+    window_width = screen_width // 3  # 1/3 of the screen width
+    window_height = screen_height // 10  # 1/10 of the screen height
+
+    frame = tk.Frame(root)
+    frame.pack()
+
+    root.geometry(f"{window_width}x{window_height}")  # Set the window size
+
+    root.configure(bg='white')  # Set the background color to white
+
+    listbox = tk.Listbox(root, bg='white', fg='black', bd=0, highlightthickness=0, selectbackground='darkgray')  # Set the listbox style 
+    listbox.pack(fill=tk.BOTH, expand=1)
+
+    # Create a dictionary to store the state of the option for each window
+    option_states = {}
+
+    context_menu = tk.Menu(root, tearoff=0)
+
+    def toggle_option():
+        # Get the selected item
+        selected = listbox.get(listbox.curselection())
+
+        # Toggle the state of the option for this item
+        if selected in option_states and option_states[selected]:
+            print(f"Option 1 deactivated for window {selected}")
+            option_states[selected] = False
+        else:
+            print(f"Option 1 activated for window {selected}")
+            option_states[selected] = True
+
+            # Bring the window to the foreground
+            hwnd = next((window[0] for window in windows if window[1] == selected), None)
+            if hwnd is not None:
+                parent_hwnd = win32gui.GetParent(hwnd)
+                if parent_hwnd != 0:
+                    win32gui.ShowWindow(parent_hwnd, win32con.SW_SHOWMINIMIZED)
+                    win32gui.ShowWindow(parent_hwnd, win32con.SW_RESTORE)
+                win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)
+                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+
+        # Update the context menu
+        context_menu.entryconfig(0, label=f"Option 1 {'(activated)' if option_states[selected] else ''}")
+
+    context_menu.add_command(label="Option 1", command=toggle_option)
+
+    def show_context_menu(event):
+        # Select the item under the cursor
+        listbox.selection_clear(0, tk.END)
+        listbox.selection_set(listbox.nearest(event.y))
+
+        # Update the context menu
+        selected = listbox.get(listbox.curselection())
+        context_menu.entryconfig(0, label=f"Option 1 {'(activated)' if selected in option_states and option_states[selected] else ''}")
+
+        # Show the context menu
+        context_menu.post(event.x_root, event.y_root)
+
+    listbox.bind("<Button-3>", show_context_menu)
+
+    # Add windows to the listbox
+    windows = list_visible_windows()
+    for hwnd, window_title, process_name in windows:
+        listbox.insert(tk.END, window_title)
+    
+    def update_windows():
+        # Clear the listbox
+        listbox.delete(0, tk.END)
+
+        # Add windows to the listbox
+        windows = list_visible_windows()
+        windows.sort(key=lambda window: window[1])  # Sort the windows by title
+
+        for hwnd, window_title, process_name in windows:
+            # Check if the window is still open
+            if win32gui.IsWindow(hwnd):
+                listbox.insert(tk.END, window_title)
+                if window_title not in option_states:
+                    option_states[window_title] = False
+
+                # Check if the window is minimized
+                if win32gui.IsIconic(hwnd):
+                    # Reset the option for this window
+                    option_states[window_title] = False
+        root.after(5000, update_windows)
+
+    root.after(5000, update_windows)
+
+
+    root.mainloop()
+
+create_window()
