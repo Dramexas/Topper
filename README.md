@@ -5,13 +5,12 @@ Topper is a software that allows you to choose one or more windows to stay on to
 
 Select one or more windows to bring to the forefront using a keyboard shortcut or a context menu.
 Adjust the transparency of the foreground windows to make them more or less visible.
-Disable the foreground mode for a window using the same keyboard shortcut or context menu.
-Customize keyboard shortcuts and context menu options according to your preferences.
-Installation
+
+# Installation
 To install Topper, you need to have a compatible Windows operating system (Windows 7 or higher). You can download the installation file from [this link] or clone the GitHub repository from [this address].
 
 # Usage
-To use WindowTopper, you first need to launch the software by double-clicking on the icon. You will then see a WindowTopper icon in the taskbar. Right-click on this icon to access the software options.
+To use Topper, you first need to launch the software by double-clicking on the icon. You will then see a WindowTopper icon in the taskbar. Right-click on this icon to access the software options.
 
 To bring a window to the forefront, you can use the keyboard shortcut [shortcut] or right-click on the window's title bar and choose the "Bring to Front" option. You will then see a visual indicator on the window to show that it is in the foreground mode.
 
