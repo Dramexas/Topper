@@ -18,7 +18,7 @@ To adjust the transparency of a foreground window, you can use the keyboard shor
 To disable the foreground mode for a window, you can use the same keyboard shortcut or context menu as you did to activate it. The visual indicator will disappear, and the window will resume its normal behavior.
 
 # License
-Topper is free and open-source software under the [license] license. You can refer to the LICENSE.txt file for more details.
+Topper is free and open-source software under the MIT license. You can refer to the LICENSE.txt file for more details.
 
 # Contact
 If you have any questions, suggestions, or issues with WindowTopper, you can contact me at mattiah.saxemard@gmail.com or create an issue on GitHub.
