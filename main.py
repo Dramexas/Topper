@@ -40,30 +40,32 @@ def create_window():
     context_menu = tk.Menu(root, tearoff=0)
 
     def toggle_option():
-        # Get the selected item
-        selected = listbox.get(listbox.curselection())
+        # Check if an item is selected
+        if listbox.curselection():
+            # Get the selected item
+            selected = listbox.get(listbox.curselection())
 
-        # Toggle the state of the option for this item
-        if selected in option_states and option_states[selected]:
-            print(f"Option 1 deactivated for window {selected}")
-            option_states[selected] = False
-        else:
-            print(f"Option 1 activated for window {selected}")
-            option_states[selected] = True
+            # Toggle the state of the option for this item
+            if selected in option_states and option_states[selected]:
+                print(f"Option 1 deactivated for window {selected}")
+                option_states[selected] = False
+            else:
+                print(f"Option 1 activated for window {selected}")
+                option_states[selected] = True
 
-            # Bring the window to the foreground
-            hwnd = next((window[0] for window in windows if window[1] == selected), None)
-            if hwnd is not None:
-                parent_hwnd = win32gui.GetParent(hwnd)
-                if parent_hwnd != 0:
-                    win32gui.ShowWindow(parent_hwnd, win32con.SW_SHOWMINIMIZED)
-                    win32gui.ShowWindow(parent_hwnd, win32con.SW_RESTORE)
-                win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)
-                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-                win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+                # Bring the window to the foreground
+                hwnd = next((window[0] for window in windows if window[1] == selected), None)
+                if hwnd is not None:
+                    parent_hwnd = win32gui.GetParent(hwnd)
+                    if parent_hwnd != 0:
+                        win32gui.ShowWindow(parent_hwnd, win32con.SW_SHOWMINIMIZED)
+                        win32gui.ShowWindow(parent_hwnd, win32con.SW_RESTORE)
+                    win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
 
-        # Update the context menu
-        context_menu.entryconfig(0, label=f"Option 1 {'(activated)' if option_states[selected] else ''}")
+            # Update the context menu
+            context_menu.entryconfig(0, label=f"Option 1 {'(activated)' if option_states[selected] else ''}")
 
     context_menu.add_command(label="Option 1", command=toggle_option)
 
