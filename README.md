@@ -6,7 +6,7 @@ Topper is a software that allows you to choose one or more windows to stay on to
 Select one or more windows to bring to the forefront using a keyboard shortcut or a context menu.
 
 # Installation
-To install Topper, you need to have a compatible Windows operating system (Windows 7 or higher). You can download the installation file from [this link] or clone the GitHub repository from [this address].
+To install Topper, you need to have a compatible Windows operating system (Windows 7 or higher). You can download the python file from (https://github.com/Dramexas/Topper/main.py) or clone the GitHub repository from (https://github.com/Dramexas/Topper).
 
 # Usage
 To use Topper, you first need to launch the software by double-clicking on the icon. You will then see a WindowTopper icon in the taskbar. Right-click on this icon to access the software options.
