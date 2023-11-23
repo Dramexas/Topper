@@ -17,7 +17,9 @@ To bring a window to the forefront, you can right-click on the window's title ba
 To disable the foreground mode for a window, you can right-click the window and disable. The visual indicator will disappear, and the window will resume its normal behavior.
 
 # Demo
+
 https://github.com/Dramexas/Topper/assets/92268356/f2a67673-d5d8-4f2d-9586-0bf4b1053197
+
 You can see that after activating a window in Topper, you can even close the software.
 The only way to disable the window from being up front is to reduce it or close it !
 
